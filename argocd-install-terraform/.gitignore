@@ -1,0 +1,13 @@
+# Local Terraform state files
+*.tfstate
+*.tfstate.backup
+
+# Log files
+crash.log
+*.log
+
+# Ignore the .terraform directory, which contains provider plugins and modules
+.terraform/
+
+# In-house modules, if you were to use them
+.terraform.lock.hcl 
