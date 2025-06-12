@@ -24,4 +24,4 @@ helmCharts:
         - host: service-b.prod.local
 
 # For the production environment, we deploy into the 'default' namespace
-namespace: default 
+namespace: production 

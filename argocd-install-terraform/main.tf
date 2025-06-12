@@ -14,7 +14,7 @@ resource "helm_release" "argocd" {
   chart            = "argo-cd"
   namespace        = kubernetes_namespace.argocd.metadata[0].name
   create_namespace = false # We created it above
-  # Use a specific, recent, and valid version for stability
+   version = "5.51.6"# Use a specific, recent, and valid version for stability
 
   # Wait for all the Argo CD pods to be ready before considering the install a success
   wait = true
