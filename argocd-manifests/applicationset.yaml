@@ -26,8 +26,6 @@ spec:
         targetRevision: HEAD
         # The source for the application is the Kustomize config in the discovered path
         path: '{{path}}'
-        kustomize:
-          buildOptions: "--enable-helm"
       destination:
         # The destination server is always the same
         server: https://kubernetes.default.svc
