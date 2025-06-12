@@ -7,7 +7,7 @@ spec:
   generators:
     # Use the Git generator to discover environment directories
     - git:
-        repoURL: https://github.com/your-username/your-repo.git
+        repoURL: https://github.com/danieltech33/argocd-evolution.git
         revision: HEAD
         # Discover all subdirectories under the 'environments' path
         directories:
@@ -22,8 +22,7 @@ spec:
     spec:
       project: default
       source:
-        # IMPORTANT: Replace this with your Git repository URL
-        repoURL: https://github.com/your-username/your-repo.git
+        repoURL: https://github.com/danieltech33/argocd-evolution.git
         targetRevision: HEAD
         # The source for the application is the Kustomize config in the discovered path
         path: '{{path}}'

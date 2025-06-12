@@ -24,14 +24,12 @@ This directory contains the manifest for a sophisticated GitOps workflow that su
 
 1.  **Push to Git**: Make sure the entire project is pushed to a Git repository.
 
-2.  **Update Repository URL**: In `applicationset.yaml`, replace the placeholder `https://github.com/your-username/your-repo.git` with your actual Git repository URL.
-
-3.  **Apply the ApplicationSet**:
+2.  **Apply the ApplicationSet**: The `applicationset.yaml` is now configured to use `https://github.com/danieltech33/argocd-evolution.git`. Apply it to your cluster:
     ```bash
     kubectl apply -f argocd-manifests/applicationset.yaml
     ```
 
-4.  **Verify in Argo CD**: Open your Argo CD UI. It will discover the `ApplicationSet`, which will then discover the `production` and `developer-namespace` environment folders and create an Argo CD Application for each one. You will see two applications running, deploying their respective services into their configured namespaces.
+3.  **Verify in Argo CD**: Open your Argo CD UI. It will discover the `ApplicationSet`, which will then scan your repository and automatically generate the `production` and `developer-namespace` applications.
 
 ## The Developer Workflow (CI/CD Simulation)
 
