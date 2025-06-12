@@ -1,0 +1,9 @@
+# Global values for all microservices
+# This value will be inherited by all sub-charts
+global:
+  deploymentColor: blue
+
+# Per-service configurations can be placed here if needed,
+# allowing for granular control. For example:
+# service-a:
+#   deploymentColor: green # This would override the global color for service-a only 

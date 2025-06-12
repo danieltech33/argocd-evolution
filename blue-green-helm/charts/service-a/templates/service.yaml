@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-service-a
+  labels:
+    app.kubernetes.io/name: service-a
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: service-a
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    # This ensures the service only selects pods with the active color
+    color: {{ coalesce .Values.deploymentColor ( .Values.global | default dict ).deploymentColor "blue" | quote }}
+    # In a real blue/green setup, you would have a stable service
+    # that points to the active color. For example, you might have
+    # another service called 'service-a-active' and you would update
+    # its selector to point to 'blue' or 'green'.
+    # Alternatively, an Ingress or Service Mesh would manage traffic splitting. 

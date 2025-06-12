@@ -1,0 +1,27 @@
+# environments/production/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# This environment includes service-a and the original service-b
+helmCharts:
+  - name: service-a
+    releaseName: prod-service-a
+    version: 0.1.0
+    repo: file://../../../blue-green-helm/charts/service-a
+    valuesInline:
+      deploymentColor: blue
+      ingress:
+        hosts:
+        - host: service-a.prod.local
+  - name: service-b
+    releaseName: prod-service-b
+    version: 0.1.0
+    repo: file://../../../blue-green-helm/charts/service-b
+    valuesInline:
+      deploymentColor: blue
+      ingress:
+        hosts:
+        - host: service-b.prod.local
+
+# For the production environment, we deploy into the 'default' namespace
+namespace: default 

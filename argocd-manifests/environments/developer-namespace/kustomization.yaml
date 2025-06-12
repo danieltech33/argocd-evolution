@@ -1,0 +1,30 @@
+# environments/developer-namespace/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# This environment includes service-a and the new service-b-v2
+helmCharts:
+  - name: service-a
+    releaseName: dev-service-a
+    version: 0.1.0
+    repo: file://../../../blue-green-helm/charts/service-a
+    valuesInline:
+      deploymentColor: green # Let's use a different color for the dev env
+      ingress:
+        hosts:
+        - host: service-a.dev.local
+  - name: service-b-v2
+    releaseName: dev-service-b-v2
+    version: 0.1.0
+    repo: file://../../../blue-green-helm/charts/service-b-v2
+    valuesInline:
+      deploymentColor: green
+      # This simulates the CI flow updating the image with a developer's feature tag
+      image:
+        tag: "feature-branch-xyz"
+      ingress:
+        hosts:
+        - host: service-b-v2.dev.local
+
+# For the developer environment, we deploy everything into an isolated namespace
+namespace: developer-namespace 

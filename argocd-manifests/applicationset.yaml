@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: all-environments
+  namespace: argocd
+spec:
+  generators:
+    # Use the Git generator to discover environment directories
+    - git:
+        repoURL: https://github.com/your-username/your-repo.git
+        revision: HEAD
+        # Discover all subdirectories under the 'environments' path
+        directories:
+          - path: argocd-manifests/environments/*
+  template:
+    metadata:
+      # The application name is generated from the environment directory's name
+      name: '{{path.basename}}'
+      namespace: argocd
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: default
+      source:
+        # IMPORTANT: Replace this with your Git repository URL
+        repoURL: https://github.com/your-username/your-repo.git
+        targetRevision: HEAD
+        # The source for the application is the Kustomize config in the discovered path
+        path: '{{path}}'
+        kustomize: {} # Indicate that the source is a Kustomize directory
+      destination:
+        # The destination server is always the same
+        server: https://kubernetes.default.svc
+        # The namespace is managed by the Kustomization file, so we tell Argo to deploy
+        # the app to the namespace defined *within* the Kustomize output.
+        # This is a key part of letting each environment define its own namespace.
+        namespace: '{{path.basename}}-placeholder' # This will be overridden by Kustomize
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true 
