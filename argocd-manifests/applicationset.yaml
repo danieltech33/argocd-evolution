@@ -5,16 +5,16 @@ metadata:
   namespace: argocd
 spec:
   generators:
-    # Use the Git generator to discover environment directories
+    # Use the Git generator to discover application directories
     - git:
         repoURL: https://github.com/danieltech33/argocd-evolution.git
         revision: HEAD
-        # Discover all subdirectories under the 'environments' path
+        # Discover all files under the 'apps' path
         directories:
-          - path: argocd-manifests/environments/*
+          - path: argocd-manifests/apps/*
   template:
     metadata:
-      # The application name is generated from the environment directory's name
+      # The application name is generated from the app directory's name
       name: '{{path.basename}}'
       namespace: argocd
       finalizers:
@@ -24,15 +24,17 @@ spec:
       source:
         repoURL: https://github.com/danieltech33/argocd-evolution.git
         targetRevision: HEAD
-        # The source for the application is the Kustomize config in the discovered path
+        # The source for the application is the config in the discovered path
         path: '{{path}}'
+      # kustomize:
+      #   buildOptions: --enable-helm
       destination:
         # The destination server is always the same
         server: https://kubernetes.default.svc
         # The namespace is managed by the Kustomization file, so we tell Argo to deploy
         # the app to the namespace defined *within* the Kustomize output.
         # This is a key part of letting each environment define its own namespace.
-        namespace: '{{path.basename}}-placeholder' # This will be overridden by Kustomize
+        namespace: default
       syncPolicy:
         automated:
           prune: true

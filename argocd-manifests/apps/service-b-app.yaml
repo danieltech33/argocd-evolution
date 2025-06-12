@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: service-b
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/danieltech33/argocd-evolution.git
+    targetRevision: HEAD
+    path: blue-green-helm/charts/service-b
+    helm:
+      releaseName: service-b
+      values: |
+        deploymentColor: blue
+        ingress:
+          hosts:
+          - host: service-b.prod.local
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true 
