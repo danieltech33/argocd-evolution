@@ -7,11 +7,10 @@ spec:
   generators:
     # Use the Git generator to discover application directories
     - git:
+        files:
+          - path: "argocd-manifests/apps/*.yaml"
         repoURL: https://github.com/danieltech33/argocd-evolution.git
         revision: HEAD
-        # Discover all files under the 'apps' path
-        directories:
-          - path: argocd-manifests/apps/*
   template:
     metadata:
       # The application name is generated from the app directory's name

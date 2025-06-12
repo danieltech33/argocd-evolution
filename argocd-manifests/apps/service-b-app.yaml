@@ -16,8 +16,7 @@ spec:
       values: |
         deploymentColor: blue
         ingress:
-          hosts:
-          - host: service-b.prod.local
+         enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: default

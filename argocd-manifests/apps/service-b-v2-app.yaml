@@ -18,8 +18,7 @@ spec:
         image:
           tag: "feature-branch-xyz"
         ingress:
-          hosts:
-          - host: service-b-v2.dev.local
+          enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: developer-namespace
