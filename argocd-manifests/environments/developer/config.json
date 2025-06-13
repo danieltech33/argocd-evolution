@@ -5,6 +5,12 @@
       "namespace": "developer",
       "chart_path": "blue-green-helm/charts/service-a",
       "image_tag": "latest"
+    },
+    {
+      "service_name": "service-c",
+      "namespace": "developer",
+      "chart_path": "blue-green-helm/charts/service-c",
+      "image_tag": "latest"
     }
   ]
 } 
