@@ -25,10 +25,9 @@ spec:
         # All parent apps point to our single generator chart.
         path: helm-charts/app-of-apps-generator
         helm:
-          # This is the key: we feed the config.json from the discovered
-          # environment directory as a values file to the Helm chart.
+          # The key fix: Use an absolute path from the repo root for the values file.
           valueFiles:
-          - ../../argocd-manifests/environments/{{path.basename}}/config.json
+          - /argocd-manifests/environments/{{path.basename}}/config.json
           # We also pass some global values that the child templates need.
           values: |
             global:
