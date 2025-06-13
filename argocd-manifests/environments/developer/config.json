@@ -1,0 +1,8 @@
+[
+  {
+    "service_name": "service-a",
+    "namespace": "developer",
+    "chart_path": "blue-green-helm/charts/service-a",
+    "image_tag": "latest"
+  }
+] 

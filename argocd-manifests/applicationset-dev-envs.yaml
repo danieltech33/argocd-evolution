@@ -1,0 +1,41 @@
+# argocd-manifests/applicationset-dev-envs.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: developer-environments
+  namespace: argocd
+spec:
+  generators:
+    # This generator finds all config.json files in the environments directory.
+    # It will iterate through the JSON array in each file.
+    - git:
+        repoURL: https://github.com/danieltech33/argocd-evolution.git
+        revision: HEAD
+        files:
+          - path: "argocd-manifests/environments/**/config.json"
+  template:
+    metadata:
+      # Application name will be unique, e.g., "pr-123-service-a"
+      name: '{{path[2]}}-{{service_name}}'
+      namespace: argocd
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/danieltech33/argocd-evolution.git
+        targetRevision: HEAD
+        path: '{{chart_path}}' # From config.json, e.g., "blue-green-helm/charts/service-a"
+        helm:
+          values: |
+            image:
+              tag: "{{image_tag}}" # From config.json, e.g., "feature-xyz"
+            ingress:
+              enabled: false # Ingress is usually not needed for dev environments
+      destination:
+        server: 'https://kubernetes.default.svc'
+        namespace: '{{namespace}}' # From config.json, e.g., "pr-123"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true 
