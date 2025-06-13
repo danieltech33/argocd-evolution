@@ -1,0 +1,41 @@
+{{/*
+This template iterates over a list of services defined in the values file
+(which will be supplied by our config.json). For each service, it stamps
+out a complete ArgoCD Application manifest.
+*/}}
+{{- range .Values.services }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  # The name of the child app, e.g., "production-service-a"
+  name: {{ $.Release.Name }}-{{ .service_name }}
+  namespace: argocd
+  # This finalizer ensures that when the parent app is deleted,
+  # the child apps and their resources are also deleted.
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    # The repoURL and targetRevision are passed in as global values
+    # from the ApplicationSet.
+    repoURL: {{ $.Values.global.repoURL }}
+    targetRevision: {{ $.Values.global.targetRevision }}
+    path: {{ .chart_path }}
+    helm:
+      values: |
+        image:
+          tag: "{{ .image_tag }}"
+        ingress:
+          enabled: false
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: {{ .namespace }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+{{- end }} 

@@ -1,0 +1,10 @@
+# This file is intentionally left empty.
+# The actual values will be supplied by the config.json files
+# from each environment directory.
+#
+# The expected structure from config.json is:
+# services:
+#   - service_name: "my-service"
+#     namespace: "my-namespace"
+#     chart_path: "path/to/helm/chart"
+#     image_tag: "latest" 
