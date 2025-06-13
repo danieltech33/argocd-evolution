@@ -1,14 +1,16 @@
-[
-  {
-    "service_name": "service-a",
-    "namespace": "production",
-    "chart_path": "blue-green-helm/charts/service-a",
-    "image_tag": "stable"
-  },
-  {
-    "service_name": "service-b",
-    "namespace": "production",
-    "chart_path": "blue-green-helm/charts/service-b",
-    "image_tag": "stable"
-  }
-] 
+{
+  "services": [
+    {
+      "service_name": "service-a",
+      "namespace": "production",
+      "chart_path": "blue-green-helm/charts/service-a",
+      "image_tag": "stable"
+    },
+    {
+      "service_name": "service-b",
+      "namespace": "production",
+      "chart_path": "blue-green-helm/charts/service-b",
+      "image_tag": "stable"
+    }
+  ]
+} 

@@ -1,58 +1,71 @@
-# Argo CD ApplicationSet with Kustomize and Environment-per-Folder
+# ArgoCD Environment Management
 
-This directory contains the manifest for a sophisticated GitOps workflow that supports dynamic, per-developer environments. It uses an Argo CD `ApplicationSet` to discover "environment" folders and [Kustomize](https://kustomize.io/) to compose and configure the applications within them.
+This repository implements a hierarchical environment management structure for ArgoCD that provides:
+
+1. Visual organization of applications by environment in the ArgoCD UI
+2. Flexibility to configure services via `config.json` files
+3. Automated deployment and synchronization
 
 ## Structure
 
--   `applicationset.yaml`: A single manifest that discovers and generates Argo CD `Application` resources for each environment.
--   `environments/`: A top-level directory where each subdirectory represents a complete, deployable environment.
-    -   `production/`: Contains the Kustomize configuration for the production environment.
-    -   `developer-namespace/`: Contains the Kustomize configuration for a developer's preview environment. This simulates an environment created by a CI pipeline for a pull request.
+```
+argocd-manifests/
+├── app-of-apps.yaml            # Top-level ApplicationSet that creates environment applications
+├── environments/
+│   ├── production/
+│   │   ├── apps.yaml           # ApplicationSet for production services
+│   │   └── config.json         # Configuration for production services
+│   ├── developer/
+│   │   ├── apps.yaml           # ApplicationSet for developer services
+│   │   └── config.json         # Configuration for developer services
+│   └── pr-123/
+│       ├── apps.yaml           # ApplicationSet for PR-specific services
+│       └── config.json         # Configuration for PR-specific services
+```
 
-## How it Works
+## How It Works
 
-1.  **Environment Discovery**: The `ApplicationSet` uses a `git` generator to scan the `argocd-manifests/environments/` path. It creates an Argo CD Application for every subdirectory it finds.
+1. The `app-of-apps.yaml` creates parent applications for each environment (production, developer, pr-123)
+2. Each environment's `apps.yaml` creates child applications based on its `config.json` file
+3. This creates a hierarchy in the ArgoCD UI:
+   - Environment (e.g., "production")
+     - Service (e.g., "production-service-a")
 
-2.  **Kustomize for Composition**: Each environment folder contains a `kustomization.yaml` file. This file is the source of truth for that environment. It defines:
-    -   Which base Helm charts to deploy (e.g., `service-a`, `service-b-v2`).
-    -   Which namespace all resources should be deployed into.
-    -   Any environment-specific overrides, such as image tags, replica counts, or ingress hostnames.
+## Adding a New Environment
 
-3.  **Argo CD Application**: The `ApplicationSet` template points each generated application to the `kustomization.yaml` in the discovered environment folder. Argo CD then uses Kustomize to build the final manifests before applying them to the cluster.
+1. Create a new directory under `environments/` (e.g., `environments/staging/`)
+2. Add a `config.json` file with your service configurations
+3. Add an `apps.yaml` file based on the templates in other environments
+4. Add the new environment to the `app-of-apps.yaml` list generator
 
-## How to Use
+## Adding a New Service to an Environment
 
-1.  **Push to Git**: Make sure the entire project is pushed to a Git repository.
+Simply add a new entry to the environment's `config.json` file:
 
-2.  **Apply the ApplicationSet**: The `applicationset.yaml` is now configured to use `https://github.com/danieltech33/argocd-evolution.git`. Apply it to your cluster:
-    ```bash
-    kubectl apply -f argocd-manifests/applicationset.yaml
-    ```
+```json
+[
+  {
+    "service_name": "new-service",
+    "namespace": "production",
+    "chart_path": "blue-green-helm/charts/new-service",
+    "image_tag": "stable"
+  }
+]
+```
 
-3.  **Verify in Argo CD**: Open your Argo CD UI. It will discover the `ApplicationSet`, which will then scan your repository and automatically generate the `production` and `developer-namespace` applications.
+## Removing a Service from an Environment
 
-## The Developer Workflow (CI/CD Simulation)
+Remove the service's entry from the environment's `config.json` file. ArgoCD will automatically remove the deployed resources.
 
-This setup enables a powerful "preview environment" workflow.
+## CI/CD Integration
 
-### To Add a Developer Environment:
+For CI/CD integration, your pipeline can:
 
-A CI pipeline, triggered by a developer's pull request, would perform these steps automatically:
+1. Create/update environment directories and config.json files
+2. Push changes to the Git repository
+3. ArgoCD will automatically detect changes and apply them
 
-1.  Create a new environment directory (e.g., `argocd-manifests/environments/pr-123`).
-2.  Create a `kustomization.yaml` inside that directory.
-3.  The `kustomization.yaml` would point to the required service charts and apply patches to:
-    -   Set the namespace to a unique value (e.g., `pr-123`).
-    -   Set the image tag to the specific feature branch tag.
-4.  Commit and push this new folder to the Git repository.
+For cleanup, the CI/CD pipeline can:
 
-Argo CD's `ApplicationSet` will automatically discover the new `pr-123` folder and deploy the environment.
-
-### To Remove a Developer Environment:
-
-When the pull request is merged or closed, the CI pipeline would simply:
-
-1.  Remove the `argocd-manifests/environments/pr-123` directory from Git.
-2.  Commit and push the change.
-
-Argo CD will see that the environment folder is gone and, because `prune: true` is set, it will automatically delete the corresponding Argo CD Application and all of its Kubernetes resources, cleaning up the environment completely. 
+1. Remove the environment directory
+2. ArgoCD will automatically remove all associated resources 

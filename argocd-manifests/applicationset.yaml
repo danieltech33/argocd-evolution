@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: environment-app-of-apps
+  namespace: argocd
+spec:
+  generators:
+  # This generator discovers the environment directories (production, developer, etc.)
+  - git:
+      repoURL: https://github.com/danieltech33/argocd-evolution.git
+      revision: HEAD
+      directories:
+      - path: argocd-manifests/environments/*
+  template:
+    # This section defines the PARENT application for each environment.
+    metadata:
+      # The name of the parent app will be the directory name, e.g., "production"
+      name: '{{path.basename}}'
+      namespace: argocd
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/danieltech33/argocd-evolution.git
+        targetRevision: HEAD
+        # All parent apps point to our single generator chart.
+        path: helm-charts/app-of-apps-generator
+        helm:
+          # This is the key: we feed the config.json from the discovered
+          # environment directory as a values file to the Helm chart.
+          valueFiles:
+          - ../../argocd-manifests/environments/{{path.basename}}/config.json
+          # We also pass some global values that the child templates need.
+          values: |
+            global:
+              repoURL: https://github.com/danieltech33/argocd-evolution.git
+              targetRevision: HEAD
+      # The parent application itself doesn't deploy anything, so its destination
+      # is just a placeholder. Its children will have their own destinations.
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: argocd
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true 
