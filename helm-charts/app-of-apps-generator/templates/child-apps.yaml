@@ -28,7 +28,14 @@ spec:
         image:
           tag: "{{ .image_tag }}"
         ingress:
-          enabled: false
+          enabled: true
+          className: "nginx"
+          annotations: {}
+          hosts:
+            - host: {{ .service_name }}.{{ .namespace }}.{{ $.Values.global.domain | default "example.com" }}
+              paths:
+                - path: /
+                  pathType: Prefix
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: {{ .namespace }}

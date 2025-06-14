@@ -1,4 +1,7 @@
 {
+  "global": {
+    "domain": "pr-123.example.com"
+  },
   "services": [
     {
       "service_name": "service-b-v2",

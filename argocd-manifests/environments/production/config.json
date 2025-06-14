@@ -1,4 +1,7 @@
 {
+  "global": {
+    "domain": "prod.example.com"
+  },
   "services": [
     {
       "service_name": "service-a",

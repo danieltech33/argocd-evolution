@@ -7,4 +7,8 @@
 #   - service_name: "my-service"
 #     namespace: "my-namespace"
 #     chart_path: "path/to/helm/chart"
-#     image_tag: "latest" 
+#     image_tag: "latest"
+#
+# Global values that can be set:
+# global:
+#   domain: "example.com"  # Base domain for ingress hostnames 
