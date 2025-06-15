@@ -6,13 +6,19 @@
     {
       "service_name": "service-a",
       "namespace": "production",
-      "chart_path": "blue-green-helm/charts/service-a",
+      "chart_path": "helm-charts/helm-services/charts/service-a",
       "image_tag": "stable"
     },
     {
       "service_name": "service-b",
       "namespace": "production",
-      "chart_path": "blue-green-helm/charts/service-b",
+      "chart_path": "helm-charts/helm-services/charts/service-b",
+      "image_tag": "stable"
+    },
+    {
+      "service_name": "service-c",
+      "namespace": "production",
+      "chart_path": "helm-charts/helm-services/charts/service-b",
       "image_tag": "stable"
     }
   ]

@@ -6,7 +6,7 @@
     {
       "service_name": "service-b-v2",
       "namespace": "pr-123",
-      "chart_path": "blue-green-helm/charts/service-b-v2",
+      "chart_path": "helm-charts/helm-services/charts/service-b-v2",
       "image_tag": "feature-xyz"
     }
   ]
